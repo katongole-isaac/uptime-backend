@@ -1,0 +1,9 @@
+# data for users 
+.data/
+
+# logs 
+.logs/
+
+# https 
+https/ 
+
