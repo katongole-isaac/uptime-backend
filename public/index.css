@@ -1,0 +1,307 @@
+:root {
+    --index-height: 90vh;
+    --bs-blue: #005ce6;
+    --bs-danger: #DC3545;
+    --bs-alert: #f8d7da;
+}
+
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+
+
+a {
+    text-decoration: none;
+    color: black;
+    transition: color;
+}
+
+a:hover {
+    color: var(--bs-blue);
+}
+
+ul {
+    list-style: none;
+}
+
+nav {
+    width: 100vw;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    padding: 0.5em 1em ;
+}
+
+
+ul {
+    display: flex;
+    gap: 1em;
+}
+
+button {
+    border: none;
+    padding: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: .1em;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+input {
+    padding: 0.7em 1em ;
+    min-width: 250px;
+    border: 1px solid #ccc;
+}
+
+
+input:focus {
+    outline: 2px solid #ccc;
+}
+
+input[type=checkbox]:focus {
+    outline: none;
+}
+
+form button {
+    background: var(--bs-blue);
+    color: white;
+    padding: .8em 1em;
+}
+
+
+.errorMsg {
+    background: var(--bs-alert);
+    color: #DC3545 ;
+    padding: 0.5em 1em;
+    margin-bottom: 1em;
+}
+
+.errorMsg > * {
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+    margin-bottom: 1em;
+}
+
+
+/* container-fluid */
+.container-fluid {
+    background: #fafafa;
+}
+
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+
+}
+
+
+/*  Nav seetings */
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/*  Font Awesome */
+
+.fa.fa-bars {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    display: none;
+    position: absolute;
+
+}
+
+
+
+/* Logo */
+.logo-wrapper {
+    width: 50px;
+    height: 50px;
+}
+
+.logo-wrapper img {
+    width: 100%;
+    height: 100%;
+}
+
+.logo-section {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+
+/* Index Page */
+.index {
+    min-height: var(--index-height);
+    height: 100%;
+    width: 100%;
+    
+    display: flex;
+    justify-content: center;
+    padding-top: 5em;
+}
+
+.i_heading {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap:  .5em;
+}
+
+.i_heading  h1 {
+    text-transform: uppercase;
+}
+
+.i_heading p {
+    font-weight: 600;
+}
+
+
+.card {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #eee;
+    max-width: 500px ;
+    /* margin: auto; */
+    padding: 1em;
+    background: #efefef;
+}
+
+/*  Index page - showcase */
+.showcase {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2em;
+    padding: 2em 0;
+}
+
+.showcase-btns {
+    display: flex;
+    gap: 2em;
+}
+.showcase-btns  button:nth-of-type(1) {
+    background: #134611;
+    color: white;
+}
+
+.showcase-btns  button:nth-of-type(2) {
+    background: #005ce6;
+    color: white;
+}
+
+/* SignUp */
+
+.checkbox-wrapper {
+    display: flex;
+    justify-content: start;
+    border:  1px solid red;
+    position: relative;
+}
+.form-group.agreement input[type=checkbox] {
+    border: none;
+    width: 20px;
+    min-width: 0;
+  
+}
+
+form[name="createAcc"] small {
+    color: var(--bs-danger);
+}
+
+
+/*  Login */
+.loginPage {
+    width: 100%;
+    height: 100%;
+}
+
+.login {
+    background: #fafafa;
+    padding: 1em;
+    max-width: 380px;
+    margin: auto;
+    border: 1px solid #eee;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.login h1 {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.login .errorMsg {
+    display: none;
+}
+
+
+/*  Footer  */
+
+.footer  {
+    background: #000;
+    min-height: 5vh;
+   
+}
+
+
+
+
+
+
+
+
+
+/*  Media queries */
+
+@media  screen and (max-width: 800px) {
+
+    /* Hamburg menu Icon */
+    .fa.fa-bars {
+        display: block;
+        position: relative;
+    }
+
+
+    .nav ul {
+        flex-direction: column;
+        position: absolute;
+        background: #fafafa;
+        padding: 2em;
+        top: 50px;
+        right: 0px;
+        z-index: 999;
+    }
+
+      #check ~ ul.nav-links {
+        display: none;
+} 
+
+    #check:checked ~ ul.nav-links {
+       display: flex;
+       flex-direction: column;
+} 
+
+    
+}

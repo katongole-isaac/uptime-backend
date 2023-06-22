@@ -16,6 +16,12 @@ const commonConfigs = {
     accountSid: "ACc9b75a554f0a3e516bccc54e69744bf1",
     authToken: process.env.TWILIO_AUTH_TOKEN,
   },
+  templateGlobals: {
+    company: "Isaac El-Chapel Inc",
+    yearCreated: new Date().getFullYear(),
+    baseUrl: "http://localhost:3000/",
+    description: "This is a description",
+  },
 };
 
 // for development
@@ -34,6 +40,7 @@ environments.production = {
   envName: "production",
   hashingSecret: "thisIsAlsoSecret",
   ...commonConfigs,
+  [commonConfigs.templateGlobals.baseUrl]: "https://localhost:8000",
 };
 
 // check whether NODE_ENV is set as a command line arg
@@ -45,5 +52,7 @@ const environmentToExport =
   typeof environments[currentEnvironment] === "object"
     ? environments[currentEnvironment]
     : environments.development;
+
+
 
 module.exports = environmentToExport;

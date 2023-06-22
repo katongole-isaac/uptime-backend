@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- General Setting -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="{global.baseUrl}">
+
+<!-- Meta Tags -->
+    <meta name="description" content="{global.description}" >
+    <title>{global.title}</title>
+
+
+    <!-- Static Assests -->
+    <link rel="icon" type="image/x-icon" href="favicon" />
+    <link rel="stylesheet" type="text/css" href="public/index.css" />
+
+    <!-- Font Awesome  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="container">
+                <div class="nav">
+                    <div class="logo-section">
+                        <div class="logo-wrapper">
+                            <a href="/">
+                                <img src="public/logo.png" alt="logo.png">
+                            </a>
+                        </div>
+                        <h3> Uptime Checker </h3>
+                    </div>
+
+                    <label for="check">
+                        <i class="fa fa-bars hamburger" aria-hidden="true"></i>
+                    </label>
+
+                    <input type="checkbox" name="check" id="check" hidden >
+                    
+                    <ul class="nav-links" > 
+                        <li><a href="/">Home</a></li>
+                        <li><a href="account/create">Signup</a></li>
+                        <li><a href="account/login">Login</a></li>
+                        <li><a href="">Dashboard</a></li>
+                        <li><a href="">Account Settings</a></li>
+                        <li><a href="">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid {global.pageClass}">
+        
+        <!-- Container -->
+         <div class=" container {global.bodyClass} ">
+
+   
+    
