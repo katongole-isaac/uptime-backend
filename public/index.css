@@ -76,6 +76,9 @@ form button {
     padding: .8em 1em;
 }
 
+form small {
+    color: var(--bs-danger);
+}
 
 .errorMsg {
     background: var(--bs-alert);
@@ -118,6 +121,20 @@ form button {
     align-items: center;
     position: relative;
 }
+
+/* Select all li item that are not first child */
+.nav ul.nav-links > li:not(:first-child) {
+    display: none;  
+}
+
+.nav ul.nav-links > li.loggedOut {
+    display: block ;
+}
+
+.nav ul.nav-links > li.loggedIn {
+    display: block;
+}
+
 
 /*  Font Awesome */
 
@@ -254,6 +271,35 @@ form[name="createAcc"] small {
 
 .login .errorMsg {
     display: none;
+}
+
+/* Logout Page */
+
+.logoutPage, .logoutPage > div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.logoutPage > div {
+    align-self: flex-start;
+    flex-direction: column;
+    gap: 2em;
+    align-items: center;
+    padding: 2em 0;
+}
+
+.logoutPage > div button {
+    background: var(--bs-blue);
+    transition: transform .2s ease-in-out;
+}
+
+.logoutPage > div button:hover {
+    transform: scale(1.1);
+}
+
+.logoutPage > div button a {
+    color: white;
 }
 
 
