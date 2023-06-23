@@ -6,7 +6,7 @@ const helpers = {};
 
 config.baseUrl = "http://localhost:3000";
 config.tokensApiEndpoint = `${config.baseUrl}/api/tokens`;
-config.usersApiEndpoint = `$${config.baseUrl}/api/users`;
+config.usersApiEndpoint = `${config.baseUrl}/api/users`;
 
 //  query selector helpers
 const _ = (elem) => document.querySelector(elem);
@@ -178,6 +178,25 @@ helpers.bindHandler = (eventType, elemSelector, handler) => {
   _(elemSelector).addEventListener(eventType, handler);
 };
 
+/**
+ * Validate strings - checks if the `str` is of length greater than `0`
+ * @param {*} str
+ * @returns string | false
+ */
+helpers.strValidate = (str) =>
+  typeof str === "string" && str.trim().length > 0 ? str : false;
+
+/**
+ * Used to determine is an object has keys or not
+ * @param {object} value object to be checked
+ * @returns boolean
+ */
+
+helpers.hasKeys = (value) => {
+  value = typeof value === "object" ? value : {};
+
+  return Object.keys(value).length > 0 ? true : false;
+};
 
 /**
  * Validating input
@@ -227,7 +246,7 @@ helpers.inputErrorMsg = (inputName, msg) => `${inputName} ${msg}`;
  * @param {string} msg  - Error Msg
  * @param {number} disappear - milliseconds delay
  */
-helpers.displayErrors = (elem, msg, disappear = 0) => {
+helpers.displayAlert = (elem, msg, disappear = 0) => {
   // show the parent of the elem
   _(elem).parentElement.style.display = "block";
 
@@ -301,9 +320,9 @@ helpers.validateForm = (formName, schema) => {
     if (schema[label].type === "boolean") value = inputValue(label, true);
     else if (schema[label].type === "number")
       value = validate(inputValue(label), null, null, schema[label].length);
-    else if (schema[label].kind !== "undefined")
+    else if (schema[label].hasOwnProperty("kind"))
       value = inputValue(label) ? inputValue(label) : false;
-    else value = validate(inputValue(label));
+    else value = validate(inputValue(label)) ? inputValue(label) : false;
 
     if (!value) errors[label] = helpers.inputErrorMsg(label, schema[label].msg);
     else data[label] = value;
@@ -316,20 +335,53 @@ helpers.validateForm = (formName, schema) => {
 };
 
 /**
+ * Used to set the value for a form input
+ * @param {string} formName Name of the form
+ * @param {string} inputName input name
+ * @param {string} value input value
+ * @returns undefined | string
+ */
+helpers.setFormValue = (formName, inputName, value) => {
+  formName = helpers.strValidate(formName);
+  inputName = helpers.strValidate(inputName);
+  value = helpers.strValidate(value);
+
+  if (!(formName && inputName && value)) return;
+
+  if (!document.forms[formName] || !document.forms[formName][inputName]) return;
+
+  return (document.forms[formName][inputName].value = value);
+};
+
+/**
  * Used to make http requests
  * @param {string} url - URL e.g `http(s)://example.com/path?q=go`
  * @param {string} method - `[GET | PUT | DELETE | POST]`
- * @param {object} data
- * @param {object} headers
+ * @param {object} data - Payload
+ * @param {object} headers - headers
+ * @param {boolean} auth - flag used to determine whether or not to add `token` to headers
  * @returns
  */
-helpers.useFetch = async (url, method = "GET", data = {}, headers = {}) => {
+helpers.useFetch = async (
+  url,
+  method = "GET",
+  data = {},
+  headers = {},
+  auth = false
+) => {
   let resp, result, errors, statusCode;
 
   method = typeof method === "undefined" || !method ? "GET" : method;
 
+  if (auth)
+    headers = {
+      ...headers,
+      "x-auth-token": helpers.getAuthToken().id,
+    };
+
   try {
-    if (method === "GET" || method === "DELETE") resp = await fetch(url);
+    if (method === "GET" || method === "DELETE")
+      resp = await fetch(url, { headers });
     else
       resp = await fetch(url, {
         body: JSON.stringify(data),
@@ -352,6 +404,55 @@ helpers.useFetch = async (url, method = "GET", data = {}, headers = {}) => {
     errors,
     statusCode,
   };
+};
+
+/**
+ * Fetches current user details
+ * @returns `{errors, data}`
+ */
+helpers.getUserDetails = async () => {
+  let data, errors;
+  const token = helpers.getAuthToken();
+
+  if (!token) return;
+
+  const url = `${config.usersApiEndpoint}/?phone=${token.phone}`;
+
+  const { errors: _errors, result } = await helpers.useFetch(
+    url,
+    "GET",
+    {},
+    {},
+    true
+  );
+
+  errors = { ..._errors };
+
+  return {
+    errors,
+    data: result,
+  };
+};
+
+/**
+ * Used to populate my_details form on `Account Settings Page`
+ * @returns `void`
+ */
+helpers.populateMyDetailsForm = async () => {
+  // runs this function only if the user is logged in
+  if (!helpers.getAuthToken()) return;
+
+  const { errors, data } = await helpers.getUserDetails();
+
+  if (Object.keys(errors).length > 0) {
+    helpers.displayAlert(".errorMsg > p", errors.error, 5000);
+
+    return;
+  }
+
+  for (let key in data) {
+    helpers.setFormValue("my_details", key, data[key]);
+  }
 };
 
 // submitting the form
@@ -392,7 +493,7 @@ const createAccSubmit = async (e) => {
   );
 
   if (_errors) {
-    helpers.displayErrors(".errorMsg > p", _errors.error, 7000);
+    helpers.displayAlert(".errorMsg > p", _errors.error, 7000);
 
     return;
   }
@@ -448,7 +549,7 @@ const LoginForm = async (e) => {
   );
 
   if (_errors) {
-    helpers.displayErrors(".errorMsg > p", _errors.error, 7000);
+    helpers.displayAlert(".errorMsg > p", _errors.error, 7000);
     console.log(_errors);
     return;
   }
@@ -460,17 +561,236 @@ const LoginForm = async (e) => {
   window.location.replace("/checks/all");
 };
 
-helpers.bindFormSubmit("loginForm", LoginForm);
-
-helpers.bindFormSubmit("createAcc", createAccSubmit);
-
-//used on nav links
-helpers.addNavClasses(".nav-links");
-
-// binding to logout btn;
-helpers.bindHandler("click", "#logout", (e) => {
+// Account Setting My details form
+const accountMyDetails = async (e) => {
   e.preventDefault();
-  // logout
-  helpers.logout();
-});
+  const msg = "a must at least have 3 to 40 char(s)";
+  const schema = {
+    firstName: { msg },
+    lastName: { msg },
+  };
+  const formName = "my_details";
 
+  const { data, errors } = helpers.validateForm(formName, schema);
+
+  // clearing all errors on validate inputs.
+  helpers.displayFormErrorMsgs(errors, formName);
+
+  if (helpers.hasKeys(errors)) {
+    helpers.displayFormErrorMsgs(errors, formName);
+
+    return;
+  }
+
+  // submit for updates here
+
+  // get phone number
+  const phone = validate(
+    helpers.getFormValue(formName, "phone"),
+    null,
+    null,
+    10
+  );
+
+  if (!phone) {
+    helpers.displayAlert(
+      ".errorMsg > p",
+      "Need a valid phone number to save the updates",
+      5000
+    );
+
+    return;
+  }
+
+  // here u can update the data
+
+  const payload = { ...data, phone };
+
+  const { errors: _errors } = await helpers.useFetch(
+    config.usersApiEndpoint,
+    "PUT",
+    payload,
+    {},
+    true
+  );
+
+  // display error returned from the request above
+  if (helpers.hasKeys(_errors)) {
+    helpers.displayAlert(".errorMsg > p", _errors.error, 5000);
+
+    return;
+  }
+
+  // successfully updates
+  helpers.displayAlert(".alert-success > p", "Successfully Updated", 5000);
+};
+
+// Change Password handler
+const changePassword = async (e) => {
+  e.preventDefault();
+
+  const formName = "change_password";
+  const msg = "a must at least have 3 to 40 char(s)";
+
+  const schema = {
+    password: { msg },
+  };
+
+  const { data, errors } = helpers.validateForm(formName, schema);
+
+  // clearing all errors on validate inputs.
+  helpers.displayFormErrorMsgs(errors, formName);
+
+  if (helpers.hasKeys(errors)) {
+    helpers.displayFormErrorMsgs(errors, formName);
+
+    return;
+  }
+
+  const phone = validate(
+    helpers.getFormValue("my_details", "phone"),
+    null,
+    null,
+    10
+  );
+
+  if (!phone) {
+    helpers.displayAlert(
+      " .change_passwd_card  .errorMsg > p",
+      "Need a valid phone number to save the updates",
+      5000
+    );
+
+    return;
+  }
+
+  const { errors: _errors } = await helpers.useFetch(
+    config.usersApiEndpoint,
+    "PUT",
+    { password: data.password, phone },
+    {},
+    true
+  );
+
+  // display error returned from the request above
+  if (helpers.hasKeys(_errors)) {
+    helpers.displayAlert(
+      ".change_passwd_card .errorMsg > p",
+      _errors.error,
+      5000
+    );
+
+    return;
+  }
+
+  // successfully updates
+  helpers.displayAlert(
+    " .change_passwd_card  .alert-success  > p",
+    "Successfully Updated",
+    5000
+  );
+};
+
+// Account delete handler
+const accountDelete =  async(e) => {
+  e.preventDefault();
+
+  const formName = "account_deletion";
+  const msg = "should not be empty";
+
+  const schema = {
+    password: { msg , kind: "accountDelete" },
+  };
+
+  const { errors, data } = helpers.validateForm(formName, schema);
+
+  // clearing all errors on validate inputs.
+  helpers.displayFormErrorMsgs(errors, formName);
+
+  if (helpers.hasKeys(errors)) {
+    helpers.displayFormErrorMsgs(errors, formName);
+
+    return;
+  }
+
+   const phone = validate(
+     helpers.getFormValue("my_details", "phone"),
+     null,
+     null,
+     10
+   );
+
+   if (!phone) {
+     helpers.displayAlert(
+       " .account_delete .errorMsg > p",
+       "Need a valid phone number to save the updates",
+       5000
+     );
+
+     return;
+   }
+
+  // you need to verify the password
+// verifying if password match
+  const { errors: _errors, result: token } = await helpers.useFetch(
+    config.tokensApiEndpoint,
+    "POST",
+    { phone , password : data.password }
+  );
+
+  if (_errors) {
+    helpers.displayAlert(
+      ".account_delete  .errorMsg > p",
+      "password do not match",
+      7000
+    );
+    console.log(_errors);
+    return;
+  }
+
+  // here  the password  matches with the given password
+  // so go ahead a delete the user.
+
+  
+
+
+  console.log(token);
+
+
+ 
+};
+
+/**
+ * Holds the `init` function that in which start the app on client
+ */
+const app = {};
+
+/**
+ * Wrappers all the app called utilities & functions
+ */
+app.init = function () {
+  helpers.bindFormSubmit("loginForm", LoginForm);
+
+  helpers.bindFormSubmit("createAcc", createAccSubmit);
+
+  helpers.bindFormSubmit("my_details", accountMyDetails);
+
+  helpers.bindFormSubmit("change_password", changePassword);
+
+  helpers.bindFormSubmit("account_deletion", accountDelete);
+  helpers.populateMyDetailsForm();
+
+  //used on nav links
+  helpers.addNavClasses(".nav-links");
+
+  // binding to logout btn;
+  helpers.bindHandler("click", "#logout", (e) => {
+    e.preventDefault();
+    // logout
+    helpers.logout();
+  });
+};
+
+window.onload = function () {
+  app.init();
+};

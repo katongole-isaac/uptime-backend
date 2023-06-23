@@ -3,6 +3,7 @@
     --bs-blue: #005ce6;
     --bs-danger: #DC3545;
     --bs-alert: #f8d7da;
+    --bs-success: #198754;
 }
 
 
@@ -51,8 +52,9 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-weight: 600;
-    letter-spacing: .1em;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    letter-spacing: .02em;
+    font-family: Arial, Helvetica, sans-serif;
+   
 }
 
 input {
@@ -80,11 +82,27 @@ form small {
     color: var(--bs-danger);
 }
 
+
+.alert-success {
+    background: var(--bs-success) ;
+    font-weight: 600;
+    color: white;
+    padding: 1em;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: .5em;
+    display: none;
+    
+}
+
 .errorMsg {
     background: var(--bs-alert);
     color: #DC3545 ;
     padding: 0.5em 1em;
     margin-bottom: 1em;
+    display: none;
+    transform: opacity 1s;
+
 }
 
 .errorMsg > * {
@@ -269,9 +287,7 @@ form[name="createAcc"] small {
     margin-bottom: 1em;
 }
 
-.login .errorMsg {
-    display: none;
-}
+
 
 /* Logout Page */
 
@@ -300,6 +316,88 @@ form[name="createAcc"] small {
 
 .logoutPage > div button a {
     color: white;
+}
+
+
+
+
+/* ACCOUNT SETTING PAGE */
+
+.accountEditPage {
+    min-height: 90vh;
+    padding-top: 4em;
+}
+
+.accountEditPage h1 {
+    margin-bottom: .5em;
+}
+
+.account_upper_section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+    width: 100%;
+    /* border: 1px solid purple; */
+    justify-content: center;
+    margin: 2em 0;
+}
+
+
+.right_panel {
+
+    /* border: 1px solid red; */
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 1em;
+
+}
+
+.my_details_card, .change_passwd_card, .account_delete {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    
+}
+
+.my_details_card {
+    padding: 4em;
+    flex-basis: 55%;
+}
+
+
+.change_passwd_card {
+    padding: 2em 1em;
+    align-items: flex-start;
+    flex: 1;
+}
+
+ .account_delete h4  , .change_passwd_card h4, hr {
+    margin-bottom: .5em;
+}
+
+.account_delete {
+    flex: 1;
+    padding:  1em;
+    /* background: var(--bs-danger); */
+    font-weight: 700;
+
+}
+
+.account_delete h4 {
+    color: var(--bs-danger);
+}
+
+.account_delete >  small  {
+    margin-bottom: 0.5em;
+    display: inline-block;
+    color: var(--bs-danger);
+
+}
+
+.account_delete button {
+    background: var(--bs-danger);
+    color: white;
+    font-weight: 600;
 }
 
 
