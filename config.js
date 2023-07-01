@@ -33,6 +33,15 @@ environments.development = {
   ...commonConfigs,
 };
 
+// for testing
+environments.testing = {
+  httpPort: 5000,
+  httpsPort: 5001,
+  envName: "testing",
+  hashingSecret: "thisIsATestSecret",
+  ...commonConfigs,
+};
+
 // for production
 environments.production = {
   httpPort: 8000,
